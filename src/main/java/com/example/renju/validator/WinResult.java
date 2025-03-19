@@ -1,8 +1,5 @@
 package com.example.renju.validator;
 
-import lombok.Getter;
-
-@Getter
 public class WinResult {
     int winner;
     int row;
@@ -12,5 +9,17 @@ public class WinResult {
         this.winner = winner;
         this.row = row;
         this.col = col;
+    }
+
+    public int getWinner() {
+        return winner;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public int getCol() {
+        return col;
     }
 }
