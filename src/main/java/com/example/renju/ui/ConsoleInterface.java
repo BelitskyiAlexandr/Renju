@@ -2,6 +2,7 @@ package com.example.renju.ui;
 
 import com.example.renju.validator.WinChecker;
 import com.example.renju.validator.WinResult;
+import com.example.renju.model.CellState;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -60,7 +61,7 @@ public class ConsoleInterface {
                         continue;
                     }
 
-                    int[][] board = readBoardFromFile(file);
+                    CellState[][] board = readBoardFromFile(file);
                     if (board == null) {
                         System.out.println("Skipping file due to invalid data: " + file.getName());
                         continue;
@@ -75,28 +76,26 @@ public class ConsoleInterface {
         }
     }
 
-    private static int[][] readBoardFromFile(File file) {
-        int[][] board = new int[BOARD_SIZE][BOARD_SIZE];
+    private static CellState[][] readBoardFromFile(File file) {
+        CellState[][] board = new CellState[BOARD_SIZE][BOARD_SIZE];
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int row = 0;
             while ((line = br.readLine()) != null && row < BOARD_SIZE) {
                 String[] values = line.split(",");
                 if (values.length != BOARD_SIZE) {
-                    System.out.println("Error: Invalid number of columns in file: " + file.getName());
+                    System.out.println("Error: Invalid number of columns in file: "
+                            + file.getName());
                     return null;
                 }
 
                 for (int col = 0; col < BOARD_SIZE; col++) {
                     try {
                         int value = Integer.parseInt(values[col].trim());
-                        if (value < 0 || value > 2) {
-                            System.out.println("Error: Invalid value at (" + row + ", " + col + ") in file: " + file.getName());
-                            return null;
-                        }
-                        board[row][col] = value;
+                        board[row][col] = CellState.fromValue(value);
                     } catch (NumberFormatException e) {
-                        System.out.println("Error: Invalid value at (" + row + ", " + col + ") in file: " + file.getName());
+                        System.out.println("Error: Invalid value at (" + row + ", "
+                                + col + ") in file: " + file.getName());
                         return null;
                     }
                 }
@@ -117,9 +116,9 @@ public class ConsoleInterface {
     }
 
     private static void printResult(WinResult result) {
-        int winner = result.getWinner();
-        System.out.println("~~~~~\n" + winner);
-        if (winner != 0) {
+        CellState winner = result.getWinner();
+        System.out.println("~~~~~\n" + winner.getValue());
+        if (winner != CellState.EMPTY) {
             System.out.println(result.getRow() + " " + result.getCol());
         }
     }
