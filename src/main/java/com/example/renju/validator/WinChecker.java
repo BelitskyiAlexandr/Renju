@@ -13,11 +13,15 @@ public class WinChecker {
                 int stone = board[row][col];
                 if (stone == 0) continue;
 
-                if (checkDirection(board, row, col, 0, 1, stone) || // horizontal
-                        checkDirection(board, row, col, 1, 0, stone) || // vertical
-                        checkDirection(board, row, col, 1, 1, stone) || // diagonal \
-                        checkDirection(board, row, col, 1, -1, stone)) { // diagonal /
+                if (checkDirection(board, row, col, 0, 1, stone) ||
+                        checkDirection(board, row, col, 1, 0, stone) ||
+                        checkDirection(board, row, col, 1, 1, stone)) {
+
                     return new WinResult(stone, row + 1, col + 1);
+                }
+
+                if (checkDirection(board, row, col, 1, -1, stone)) {
+                    return new WinResult(stone, row + 4 + 1, col - 4 + 1);
                 }
             }
         }
