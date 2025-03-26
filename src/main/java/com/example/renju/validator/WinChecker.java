@@ -1,5 +1,6 @@
 package com.example.renju.validator;
 
+import com.example.renju.model.CellState;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -7,29 +8,34 @@ public class WinChecker {
     private static final int BOARD_SIZE = 19;
     private static final int WIN_LENGTH = 5;
 
-    public static WinResult checkWin(int[][] board) {
+    public static WinResult checkWin(CellState[][] board) {
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                int stone = board[row][col];
-                if (stone == 0) continue;
+                CellState stone = board[row][col];
+                if (stone == CellState.EMPTY) continue;
 
-                if (checkDirection(board, row, col, 0, 1, stone) || // horizontal
-                        checkDirection(board, row, col, 1, 0, stone) || // vertical
-                        checkDirection(board, row, col, 1, 1, stone) || // diagonal \
-                        checkDirection(board, row, col, 1, -1, stone)) { // diagonal /
+                if (checkDirection(board, row, col, 0, 1, stone) ||
+                        checkDirection(board, row, col, 1, 0, stone) ||
+                        checkDirection(board, row, col, 1, 1, stone)) {
+
                     return new WinResult(stone, row + 1, col + 1);
+                }
+
+                if (checkDirection(board, row, col, 1, -1, stone)) {
+                    return new WinResult(stone, row + 4 + 1, col - 4 + 1);
                 }
             }
         }
-        return new WinResult(0, -1, -1);
+        return new WinResult(CellState.EMPTY, -1, -1);
     }
 
-    private static boolean checkDirection(int[][] board, int row, int col, int dRow, int dCol, int stone) {
+    private static boolean checkDirection(CellState[][] board, int row, int col,
+                                          int dRow, int dCol, CellState stone) {
         int count = 1;
         int prevRow = row - dRow;
         int prevCol = col - dCol;
         if (isValid(prevRow, prevCol) && board[prevRow][prevCol] == stone) {
-            return false; // do not more than 5
+            return false;
         }
 
         for (int i = 1; i < WIN_LENGTH; i++) {
@@ -38,7 +44,7 @@ public class WinChecker {
             if (isValid(newRow, newCol) && board[newRow][newCol] == stone) {
                 count++;
             } else {
-                break;
+                return false;
             }
         }
 
@@ -55,5 +61,3 @@ public class WinChecker {
         return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
     }
 }
-
-

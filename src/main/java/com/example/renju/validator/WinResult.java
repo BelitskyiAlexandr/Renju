@@ -1,17 +1,19 @@
 package com.example.renju.validator;
 
-public class WinResult {
-    int winner;
-    int row;
-    int col;
+import com.example.renju.model.CellState;
 
-    public WinResult(int winner, int row, int col) {
+public class WinResult {
+    private CellState winner;
+    private int row;
+    private int col;
+
+    public WinResult(CellState winner, int row, int col) {
         this.winner = winner;
         this.row = row;
         this.col = col;
     }
 
-    public int getWinner() {
+    public CellState getWinner() {
         return winner;
     }
 

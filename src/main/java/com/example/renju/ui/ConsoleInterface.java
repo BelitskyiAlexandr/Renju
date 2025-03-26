@@ -2,6 +2,7 @@ package com.example.renju.ui;
 
 import com.example.renju.validator.WinChecker;
 import com.example.renju.validator.WinResult;
+import com.example.renju.model.CellState;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -13,6 +14,9 @@ import java.util.Scanner;
 @Component
 public class ConsoleInterface {
     private static final String TEST_CASES_PATH = "testcases";
+    private static final int BOARD_SIZE = 19;
+    private static final int MIN_CASES = 1;
+    private static final int MAX_CASES = 11;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -45,7 +49,7 @@ public class ConsoleInterface {
 
             try {
                 int cases = Integer.parseInt(input);
-                if (cases < 1 || cases > 11) {
+                if (cases < MIN_CASES || cases > MAX_CASES) {
                     System.out.println("Invalid number. Please enter a value between 1 and 11.");
                     continue;
                 }
@@ -57,7 +61,12 @@ public class ConsoleInterface {
                         continue;
                     }
 
-                    int[][] board = readBoardFromFile(file);
+                    CellState[][] board = readBoardFromFile(file);
+                    if (board == null) {
+                        System.out.println("Skipping file due to invalid data: " + file.getName());
+                        continue;
+                    }
+
                     WinResult result = WinChecker.checkWin(board);
                     printResult(result);
                 }
@@ -67,28 +76,49 @@ public class ConsoleInterface {
         }
     }
 
-    private static int[][] readBoardFromFile(File file) {
-        int[][] board = new int[19][19];
+    private static CellState[][] readBoardFromFile(File file) {
+        CellState[][] board = new CellState[BOARD_SIZE][BOARD_SIZE];
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int row = 0;
-            while ((line = br.readLine()) != null && row < 19) {
+            while ((line = br.readLine()) != null && row < BOARD_SIZE) {
                 String[] values = line.split(",");
-                for (int col = 0; col < Math.min(values.length, 19); col++) {
-                    board[row][col] = Integer.parseInt(values[col].trim());
+                if (values.length != BOARD_SIZE) {
+                    System.out.println("Error: Invalid number of columns in file: "
+                            + file.getName());
+                    return null;
+                }
+
+                for (int col = 0; col < BOARD_SIZE; col++) {
+                    try {
+                        int value = Integer.parseInt(values[col].trim());
+                        board[row][col] = CellState.fromValue(value);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error: Invalid value at (" + row + ", "
+                                + col + ") in file: " + file.getName());
+                        return null;
+                    }
                 }
                 row++;
             }
+
+            if (row != BOARD_SIZE) {
+                System.out.println("Error: Invalid number of rows in file: " + file.getName());
+                return null;
+            }
+
         } catch (IOException e) {
-            System.out.println("Error reading file: " + file.getName());
+            System.out.println("Error reading file: " + file.getName() + " - " + e.getMessage());
+            return null;
         }
+
         return board;
     }
 
     private static void printResult(WinResult result) {
-        int winner = result.getWinner();
-        System.out.println("~~~~~\n" + winner);
-        if (winner != 0) {
+        CellState winner = result.getWinner();
+        System.out.println("~~~~~\n" + winner.getValue());
+        if (winner != CellState.EMPTY) {
             System.out.println(result.getRow() + " " + result.getCol());
         }
     }
