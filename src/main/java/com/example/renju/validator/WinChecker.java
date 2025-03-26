@@ -22,7 +22,8 @@ public class WinChecker {
                 }
 
                 if (checkDirection(board, row, col, 1, -1, stone)) {
-                    return new WinResult(stone, row + 4 + 1, col - 4 + 1);
+                    return new WinResult(stone, row + (WIN_LENGTH - 1) + 1,
+                            col - (WIN_LENGTH - 1) + 1);
                 }
             }
         }
