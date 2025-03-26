@@ -44,7 +44,7 @@ public class WinChecker {
             if (isValid(newRow, newCol) && board[newRow][newCol] == stone) {
                 count++;
             } else {
-                break;
+                return false;
             }
         }
 
