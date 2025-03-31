@@ -32,31 +32,26 @@ public class WinChecker {
 
     private static boolean checkDirection(CellState[][] board, int row, int col,
                                           int dRow, int dCol, CellState stone) {
-        int count = 1;
+        int count = 0;
         int prevRow = row - dRow;
         int prevCol = col - dCol;
         if (isValid(prevRow, prevCol) && board[prevRow][prevCol] == stone) {
             return false;
         }
 
-        for (int i = 1; i < WIN_LENGTH; i++) {
+        for (int i = 0; i < WIN_LENGTH; i++) {
             int newRow = row + dRow * i;
             int newCol = col + dCol * i;
-            if (isValid(newRow, newCol) && board[newRow][newCol] == stone) {
-                count++;
-            } else {
-                return false;
-            }
-        }
 
-        int nextRow = row + dRow * WIN_LENGTH;
-        int nextCol = col + dCol * WIN_LENGTH;
-        if (isValid(nextRow, nextCol) && board[nextRow][nextCol] == stone) {
-            return false;
+            if (!isValid(newRow, newCol) || board[newRow][newCol] != stone) {
+                break;
+            }
+            count++;
         }
 
         return count == WIN_LENGTH;
     }
+
 
     private static boolean isValid(int row, int col) {
         return row >= 0 && row < BOARD_SIZE && col >= 0 && col < BOARD_SIZE;
