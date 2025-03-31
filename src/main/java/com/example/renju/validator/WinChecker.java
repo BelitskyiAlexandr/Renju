@@ -44,7 +44,6 @@ public class WinChecker {
             int newCol = col + dCol * i;
 
             if (!isValid(newRow, newCol) || board[newRow][newCol] != stone) {
-                if (i == WIN_LENGTH) return false;
                 break;
             }
             count++;
